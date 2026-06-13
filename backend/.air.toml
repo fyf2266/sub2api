@@ -1,0 +1,8 @@
+[build]
+cmd = "go build -o ./tmp/main ./cmd/server"
+bin = "./tmp/main"
+full_bin = "env $(cat ../deploy/.env | grep -v '^#' | xargs) ./tmp/main"
+include_ext = ["go"]
+exclude_dir = ["tmp", "vendor"]
+exclude_regex = ["_test.go"]
+delay = 1000

@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -90,8 +89,8 @@ func adminComplianceAcknowledgementKey(adminUserID int64) string {
 }
 
 func (s *SettingService) GetAdminComplianceStatus(ctx context.Context, adminUserID int64) (*AdminComplianceStatus, error) {
-	status := &AdminComplianceStatus{
-		Required:       true,
+	return &AdminComplianceStatus{
+		Required:       false,
 		Version:        AdminComplianceVersion,
 		DocumentPathZH: AdminComplianceDocumentPathZH,
 		DocumentPathEN: AdminComplianceDocumentPathEN,
@@ -99,28 +98,7 @@ func (s *SettingService) GetAdminComplianceStatus(ctx context.Context, adminUser
 		DocumentURLEN:  AdminComplianceDocumentURLEN,
 		AckPhraseZH:    AdminComplianceAckPhraseZH,
 		AckPhraseEN:    AdminComplianceAckPhraseEN,
-	}
-	if s == nil || s.settingRepo == nil {
-		return status, nil
-	}
-
-	raw, err := s.settingRepo.GetValue(ctx, adminComplianceAcknowledgementKey(adminUserID))
-	if err != nil {
-		if errors.Is(err, ErrSettingNotFound) {
-			return status, nil
-		}
-		return nil, fmt.Errorf("get admin compliance acknowledgement: %w", err)
-	}
-
-	var ack AdminComplianceAcknowledgement
-	if err := json.Unmarshal([]byte(raw), &ack); err != nil {
-		return status, nil
-	}
-	if ack.Version == AdminComplianceVersion {
-		status.Required = false
-		status.Acknowledgement = &ack
-	}
-	return status, nil
+	}, nil
 }
 
 func (s *SettingService) IsAdminComplianceAcknowledged(ctx context.Context, adminUserID int64) (bool, error) {
