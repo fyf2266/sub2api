@@ -38,8 +38,8 @@ export const useAppStore = defineStore('app', () => {
   const versionLoading = ref<boolean>(false)
   const currentVersion = ref<string>('')
   const latestVersion = ref<string>('')
-  const hasUpdate = ref<boolean>(false)
-  const buildType = ref<string>('source')
+  const hasUpdate = ref<boolean>(false) // Disabled: always false to hide update notifications
+  const buildType = ref<string>('source') // Disabled: set to 'source' to hide release update button
   const releaseInfo = ref<ReleaseInfo | null>(null)
 
   // Auto-incrementing ID for toasts
@@ -261,8 +261,9 @@ export const useAppStore = defineStore('app', () => {
       const data = await checkUpdatesAPI(force)
       currentVersion.value = data.current_version
       latestVersion.value = data.latest_version
-      hasUpdate.value = data.has_update
-      buildType.value = data.build_type || 'source'
+      // Force hasUpdate to false to disable update notifications
+      hasUpdate.value = false // Disabled: always false to hide update notifications
+      buildType.value = 'source' // Disabled: always 'source' to hide release update button
       releaseInfo.value = data.release_info || null
       versionLoaded.value = true
       return data
